@@ -1,0 +1,52 @@
+# C++ 对象文件和库
+*.slo
+*.lo
+*.o
+*.obj
+*.a
+*.la
+*.lai
+*.so
+*.so.*
+*.dll
+*.dylib
+
+# Qt 生成的文件
+object_script.*.Release
+object_script.*.Debug
+*_plugin_import.cpp
+/.qmake.cache
+/.qmake.stash
+
+# 用户配置文件
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+
+# 自动生成的代码文件
+*.moc
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+
+# Qt Creator 临时文件
+*.autosave
+
+# QML 缓存文件
+qmlc
+jsc
+
+# 构建目录和 Makefile 文件
+Makefile*
+build-*
+build
+*.prl
+
+# 编译数据库和本地配置文件
+compile_commands.json
+CMakeLists.txt.user*
+*creator.user*
+
+.futili_backup

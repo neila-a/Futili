@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Icon": "backup",
+        "MimeTypes": [
+            "application/octet-stream",
+            "inode/directory"
+        ],
+        "Name": "Backup",
+        "Name[zh]": "备份",
+        "ServiceTypes": [
+            "KFileItemAction/Plugin"
+        ]
+    },
+    "MimeType": "application/octet-stream;inode/directory;"
+}
