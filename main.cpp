@@ -30,7 +30,8 @@ int main(
         return EXIT_FAILURE;
     }
     const QString action = args.first();
-    const QString filePath = args.at(1);
+    const QUrl filePathUrl(args.at(1));
+    const QString filePath = filePathUrl.toLocalFile();
     QFile file(filePath);
     if (!file.exists()) {
         qCritical().noquote() << QApplication::translate("main", "The file \"%1\" does not exist.")

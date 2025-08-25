@@ -34,6 +34,7 @@ set(CPACK_PACKAGE_CONTACT "neilaspace@outlook.com")
 set(CPACK_PACKAGE_CONTACT Neila)
 set(CPACK_DEBIAN_PACKAGE_SECTION utils)
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+set(CPACK_DEBIAN_PACKAGE_SUGGESTS dolphin)
 include(CPack)
 
 include(GNUInstallDirs)

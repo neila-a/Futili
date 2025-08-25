@@ -9,10 +9,10 @@ X-KDE-Submenu[zh]=备份
 Name=Create Backup
 Name[zh]=创建备份
 Icon=document-save
-Exec=futili create %f
+Exec=futili create %u
 
 [Desktop Action loadBackup]
 Name=Load Backup
 Name[zh]=加载备份
 Icon=backup
-Exec=futili load %f
+Exec=futili load %u
