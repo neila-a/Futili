@@ -16,8 +16,8 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets)
 
 add_executable(${PROJECT_NAME}
-  main.cpp
-  futili.qrc
+  src/main.cpp
+  public/futili.qrc
 )
 target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
@@ -43,5 +43,5 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    install(FILES futili.desktop DESTINATION /usr/share/kio/servicemenus)
+    install(FILES public/futili.desktop DESTINATION /usr/share/kio/servicemenus)
 endif()
