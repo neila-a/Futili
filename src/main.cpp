@@ -4,45 +4,51 @@
 #include <QDir>
 #include <QFile>
 #include <QInputDialog>
-#define BACKUPSDIRNAME ".futili_backup"
+#include <KLocalizedString>
+
+#define BACKUPSDIRNAME "." + QStringLiteral(NAME) + "_backup"
 
 int main(
     int argc, char *argv[]) {
+    qDebug() << 3;
     QApplication a(argc, argv);
     QApplication::setApplicationName(NAME);
     QApplication::setApplicationVersion(VERSION);
+    KLocalizedString::setApplicationDomain(QByteArrayLiteral(
+        NAME)); // https://api.kde.org/frameworks/ki18n/html/prg_guide.html#link_prog
+    qDebug() << KLocalizedString::availableDomainTranslations(NAME)
+             << KLocalizedString::availableApplicationTranslations()
+             << KLocalizedString::languages()
+             << KLocalizedString::isApplicationTranslatedInto("zh_CN") << i18n("action");
 
     QCommandLineParser parser;
     parser.addHelpOption();
     parser.addVersionOption();
-    parser.setApplicationDescription(QApplication::translate("main", DESCRIPTION));
+    parser.setApplicationDescription(i18n(DESCRIPTION));
 
-    parser.addPositionalArgument(QApplication::translate("main", "action"),
-                                 QApplication::translate("main", "\"create\" or \"load\"."));
-    parser.addPositionalArgument(QApplication::translate("main", "file"),
-                                 QApplication::translate("main",
-                                                         "URL of file to create or load backup."));
+    parser.addPositionalArgument(i18n("action"), i18n("\"create\" or \"load\"."));
+    parser.addPositionalArgument(i18n("file"), i18n("URL of file to create or load backup."));
     parser.process(a);
 
     const QStringList args = parser.positionalArguments();
     if (args.size() < 2) {
-        qCritical().noquote() << QApplication::translate("main", "Too few arguments.");
+        qCritical().noquote() << i18n("Too few arguments.");
         return EXIT_FAILURE;
     }
     const QString action = args.first();
     const QUrl filePathUrl(args.at(1));
     const QString filePath = filePathUrl.toLocalFile();
     QFile file(filePath);
+    qDebug() << filePathUrl;
     if (!file.exists()) {
-        qCritical().noquote() << QApplication::translate("main", "The file \"%1\" does not exist.")
-                                     .arg(filePath);
+        qCritical().noquote() << i18n("The file \"%1\" does not exist.", filePath);
         return EXIT_FAILURE;
     }
 
     QStringList filePathList = filePath.split(QDir::separator());
     filePathList.removeLast();
     QDir fileDir(filePathList.join(QDir::separator()));
-    bool backupsDirNoExists = fileDir.mkdir(".futili_backup");
+    bool backupsDirNoExists = fileDir.mkdir(BACKUPSDIRNAME);
     QDir backupsDir(fileDir.path() + QDir::separator() + BACKUPSDIRNAME);
     if (backupsDirNoExists) {
         QFile backupDirIconFile(":/createDirectory/backupDirectory.desktop");
@@ -54,15 +60,15 @@ int main(
 
     bool ok{};
     if (action == "create") {
-        const QString backupName = QInputDialog::getText(
-            nullptr,
-            QApplication::translate("dialog", "Create backup of %1").arg(filePath),
-            QApplication::translate("dialog", "Backup name:"),
-            QLineEdit::Normal,
-            QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss"),
-            &ok,
-            Qt::Window,
-            Qt::ImhNoAutoUppercase);
+        const QString backupName = QInputDialog::getText(nullptr,
+                                                         i18n("Create backup of %1", filePath),
+                                                         i18n("Backup name:"),
+                                                         QLineEdit::Normal,
+                                                         QDateTime::currentDateTime().toString(
+                                                             "yyyyMMdd-HHmmss"),
+                                                         &ok,
+                                                         Qt::Window,
+                                                         Qt::ImhNoAutoUppercase);
         if (ok && !backupName.isEmpty()) {
             thisBackupDir.remove(backupName);
             file.copy(thisBackupDir.path() + QDir::separator() + backupName);
@@ -70,26 +76,27 @@ int main(
                      << thisBackupDir.path() + QDir::separator() + backupName;
         }
     } else if (action == "load") {
-        const QString backupToLoad = QInputDialog::getItem(
-            nullptr,
-            QApplication::translate("dialog", "Load backup of %1").arg(filePath),
-            QApplication::translate("dialog", "Select the backup to load"),
-            thisBackupDir.entryList(QDir::Files | QDir::Readable | QDir::NoDotDot, QDir::Time),
-            0,
-            true,
-            &ok,
-            Qt::Window,
-            Qt::ImhNoAutoUppercase);
+        const QString backupToLoad
+            = QInputDialog::getItem(nullptr,
+                                    i18n("Load backup of %1", filePath),
+                                    i18n("Select the backup to load"),
+                                    thisBackupDir.entryList(QDir::Files | QDir::Readable
+                                                                | QDir::NoDotDot,
+                                                            QDir::Time),
+                                    0,
+                                    true,
+                                    &ok,
+                                    Qt::Window,
+                                    Qt::ImhNoAutoUppercase);
         if (ok) {
             file.remove();
             QFile selectedBackup(thisBackupDir.path() + QDir::separator() + backupToLoad);
             selectedBackup.copy(filePath);
         }
     } else {
-        qCritical().noquote() << QApplication::translate("main", "The action \"%1\" does not exist.")
-                                     .arg(action);
+        qCritical().noquote() << i18n("The action \"%1\" does not exist.", action);
         return EXIT_FAILURE;
     }
 
-    return EXIT_SUCCESS;
+    return a.exec();
 }

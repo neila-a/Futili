@@ -14,20 +14,26 @@ project(futili
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets)
+find_package(KF6I18n)
 
 add_executable(${PROJECT_NAME}
   src/main.cpp
-  public/futili.qrc
+  public/${PROJECT_NAME}.qrc
 )
 target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Widgets
+    KF${QT_VERSION_MAJOR}::I18n
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     NAME="${PROJECT_NAME}"
     VERSION="${PROJECT_VERSION}"
     DESCRIPTION="${PROJECT_DESCRIPTION}"
 )
+
+include(GNUInstallDirs)
+set(LOCALE_INSTALL_DIR /usr/share/locale/)
+add_subdirectory(po)
 
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_CONTACT "neilaspace@outlook.com")
@@ -37,11 +43,10 @@ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS dolphin)
 include(CPack)
 
-include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    install(FILES public/futili.desktop DESTINATION /usr/share/kio/servicemenus)
+    install(FILES public/${PROJECT_NAME}.desktop DESTINATION /usr/share/kio/servicemenus)
 endif()
