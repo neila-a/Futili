@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/createDirectory">
+        <file>backupDirectory.desktop</file>
+    </qresource>
+</RCC>

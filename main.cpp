@@ -4,8 +4,6 @@
 #include <QDir>
 #include <QFile>
 #include <QInputDialog>
-#include <QLocale>
-#include <QTranslator>
 #define BACKUPSDIRNAME ".futili_backup"
 
 int main(
@@ -13,16 +11,6 @@ int main(
     QApplication a(argc, argv);
     QApplication::setApplicationName(NAME);
     QApplication::setApplicationVersion(VERSION);
-
-    QTranslator translator;
-    const QStringList uiLanguages = QLocale::system().uiLanguages();
-    for (const QString &locale : uiLanguages) {
-        const QString baseName = QString(NAME) + "_" + QLocale(locale).name();
-        if (translator.load(":/i18n/" + baseName)) {
-            a.installTranslator(&translator);
-            break;
-        }
-    }
 
     QCommandLineParser parser;
     parser.addHelpOption();
@@ -53,8 +41,12 @@ int main(
     QStringList filePathList = filePath.split(QDir::separator());
     filePathList.removeLast();
     QDir fileDir(filePathList.join(QDir::separator()));
-    fileDir.mkdir(".futili_backup");
+    bool backupsDirNoExists = fileDir.mkdir(".futili_backup");
     QDir backupsDir(fileDir.path() + QDir::separator() + BACKUPSDIRNAME);
+    if (backupsDirNoExists) {
+        QFile backupDirIconFile(":/createDirectory/backupDirectory.desktop");
+        backupDirIconFile.copy(backupsDir.path() + QDir::separator() + ".directory");
+    }
     const QFileInfo fileInfo(file);
     backupsDir.mkdir(fileInfo.fileName());
     QDir thisBackupDir(backupsDir.path() + QDir::separator() + fileInfo.fileName());
