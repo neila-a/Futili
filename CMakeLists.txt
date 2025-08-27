@@ -17,6 +17,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets)
 
 find_package(KF6KIO)
 find_package(KF6CoreAddons)
+find_package(KF6I18n)
 
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
@@ -34,12 +35,15 @@ target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Widgets
     KF6::CoreAddons
     KF6::KIOWidgets
+    KF6::I18n
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     NAME="${PROJECT_NAME}"
     VERSION="${PROJECT_VERSION}"
     DESCRIPTION="${PROJECT_DESCRIPTION}"
 )
+
+add_subdirectory(po)
 
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_CONTACT "neilaspace@outlook.com")

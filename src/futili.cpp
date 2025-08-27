@@ -3,6 +3,7 @@
 #include <QMenu>
 #include <KActionMenu>
 #include <KFileItemListProperties>
+#include <KLocalizedString>
 #include <KPluginFactory>
 
 #define BACKUPSDIRNAME "." + QStringLiteral(NAME) + "_backup"
@@ -43,21 +44,21 @@ QList<QAction *> Futili::actions(const KFileItemListProperties &fileItemInfos,
     const QIcon backupIcon = QIcon::fromTheme("backup");
     const QIcon addIcon = QIcon::fromTheme("project-add");
 
-    QAction *backupAction = new QAction(tr("Backup"), parentWidget);
+    QAction *backupAction = new QAction(i18n("Backup"), parentWidget);
     backupAction->setIcon(backupIcon);
     QMenu *actionsMenu = new QMenu(parentWidget);
     backupAction->setMenu(actionsMenu);
 
     PREAPREDIRS();
 
-    QAction *createBackupAction = new QAction(tr("Create backup"), parentWidget);
+    QAction *createBackupAction = new QAction(i18n("Create backup"), parentWidget);
     createBackupAction->setIcon(addIcon);
     connect(createBackupAction, &QAction::triggered, this, [=]() {
         bool ok{};
         PREAPREDIRS();
         const QString backupName = QInputDialog::getText(parentWidget,
-                                                         tr("Create backup of %1").arg(filePath),
-                                                         tr("Backup name:"),
+                                                         i18n("Create backup of %1", filePath),
+                                                         i18n("Backup name:"),
                                                          QLineEdit::Normal,
                                                          QDateTime::currentDateTime()
                                                              .toString("yyyyMMdd-HHmmss"),
@@ -71,7 +72,7 @@ QList<QAction *> Futili::actions(const KFileItemListProperties &fileItemInfos,
     });
     actionsMenu->addAction(createBackupAction);
 
-    QAction *loadBackupAction = new QAction(tr("Load backup"), parentWidget);
+    QAction *loadBackupAction = new QAction(i18n("Load backup"), parentWidget);
     loadBackupAction->setIcon(addIcon);
     actionsMenu->addAction(loadBackupAction);
 

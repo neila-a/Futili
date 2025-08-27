@@ -6,6 +6,8 @@
 #include <QUrl>
 #include <KAbstractFileItemActionPlugin>
 
+#define TRANSLATION_DOMAIN "futili"
+
 class Futili : public KAbstractFileItemActionPlugin {
 public:
     Futili(QObject *parent, const QVariantList &args);
