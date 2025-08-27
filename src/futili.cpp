@@ -1,0 +1,99 @@
+#include "futili.h"
+#include <QInputDialog>
+#include <QMenu>
+#include <KActionMenu>
+#include <KFileItemListProperties>
+#include <KPluginFactory>
+
+#define BACKUPSDIRNAME "." + QStringLiteral(NAME) + "_backup"
+#define PREAPREDIRS() \
+const QUrl filePathUrl(fileItemInfos.urlList().at(0)); \
+const QString filePath = filePathUrl.toLocalFile(); \
+QFile file(filePath); \
+QStringList filePathList = filePath.split(QDir::separator()); \
+filePathList.removeLast(); \
+QDir fileDir(filePathList.join(QDir::separator())); \
+bool backupsDirNoExists = fileDir.mkdir(BACKUPSDIRNAME); \
+QDir backupsDir(fileDir.path() + QDir::separator() + BACKUPSDIRNAME); \
+if (backupsDirNoExists) { \
+    QFile backupDirIconFile(":/createDirectory/backupDirectory.desktop"); \
+    backupDirIconFile.copy(backupsDir.path() + QDir::separator() + ".directory"); \
+} \
+const QFileInfo fileInfo(file); \
+backupsDir.mkdir(fileInfo.fileName()); \
+QDir thisBackupDir(backupsDir.path() + QDir::separator() + fileInfo.fileName());
+
+K_PLUGIN_CLASS_WITH_JSON(Futili, "futili.json")
+
+Futili::Futili(QObject *parent, const QVariantList &args)
+    : KAbstractFileItemActionPlugin(parent) {
+    Q_UNUSED(args);
+}
+
+Futili::~Futili() {}
+
+QList<QAction *> Futili::actions(const KFileItemListProperties &fileItemInfos,
+                                 QWidget *parentWidget) {
+    if (!(fileItemInfos.isFile() && fileItemInfos.supportsDeleting()
+          && fileItemInfos.supportsReading() && fileItemInfos.supportsWriting()
+          && fileItemInfos.urlList().length() == 1)) {
+        return {};
+    }
+
+    const QIcon backupIcon = QIcon::fromTheme("backup");
+    const QIcon addIcon = QIcon::fromTheme("project-add");
+
+    QAction *backupAction = new QAction(tr("Backup"), parentWidget);
+    backupAction->setIcon(backupIcon);
+    QMenu *actionsMenu = new QMenu(parentWidget);
+    backupAction->setMenu(actionsMenu);
+
+    PREAPREDIRS();
+
+    QAction *createBackupAction = new QAction(tr("Create backup"), parentWidget);
+    createBackupAction->setIcon(addIcon);
+    connect(createBackupAction, &QAction::triggered, this, [=]() {
+        bool ok{};
+        PREAPREDIRS();
+        const QString backupName = QInputDialog::getText(parentWidget,
+                                                         tr("Create backup of %1").arg(filePath),
+                                                         tr("Backup name:"),
+                                                         QLineEdit::Normal,
+                                                         QDateTime::currentDateTime()
+                                                             .toString("yyyyMMdd-HHmmss"),
+                                                         &ok,
+                                                         Qt::Window,
+                                                         Qt::ImhNoAutoUppercase);
+        if (ok && !backupName.isEmpty()) {
+            thisBackupDir.remove(backupName);
+            file.copy(thisBackupDir.path() + QDir::separator() + backupName);
+        }
+    });
+    actionsMenu->addAction(createBackupAction);
+
+    QAction *loadBackupAction = new QAction(tr("Load backup"), parentWidget);
+    loadBackupAction->setIcon(addIcon);
+    actionsMenu->addAction(loadBackupAction);
+
+    QMenu *savedBackupsMenu = new QMenu(parentWidget);
+    const QList savedBackups = thisBackupDir
+                                   .entryList(QDir::Files | QDir::Readable | QDir::NoDotDot,
+                                              QDir::Time);
+    QListIterator savedBackupsIterator(savedBackups);
+    loadBackupAction->setMenu(savedBackupsMenu);
+    while (savedBackupsIterator.hasNext()) {
+        const QString thisSavedBackup = savedBackupsIterator.next();
+        QAction *thisSavedBackupAction = new QAction(thisSavedBackup);
+        connect(thisSavedBackupAction, &QAction::triggered, this, [=]() {
+            PREAPREDIRS();
+            file.remove();
+            QFile selectedBackup(thisBackupDir.path() + QDir::separator() + thisSavedBackup);
+            selectedBackup.copy(filePath);
+        });
+        savedBackupsMenu->addAction(thisSavedBackupAction);
+    }
+
+    return {backupAction};
+}
+
+#include "futili.moc"

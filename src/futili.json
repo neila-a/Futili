@@ -1,0 +1,13 @@
+{
+    "KPlugin": {
+        "Icon": "backup",
+        "MimeTypes": [
+            "application/octet-stream"
+        ],
+        "Name": "Backups",
+        "Name[zh]": "备份",
+        "License": "GPL"
+    },
+    "X-KDE-Require": "Write",
+    "X-KDE-Show-In-Submenu": "true"
+}
