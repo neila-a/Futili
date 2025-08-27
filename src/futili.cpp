@@ -47,8 +47,8 @@ QList<QAction *> Futili::actions(const KFileItemListProperties &fileItemInfos,
 
     QAction *backupAction = new QAction(i18n("Backup"), parentWidget);
     backupAction->setIcon(backupIcon);
-    QMenu *actionsMenu = new QMenu(parentWidget);
-    backupAction->setMenu(actionsMenu);
+    QMenu *backupsMenu = new QMenu(parentWidget);
+    backupAction->setMenu(backupsMenu);
 
     PREPAREDIRS();
 
@@ -71,18 +71,13 @@ QList<QAction *> Futili::actions(const KFileItemListProperties &fileItemInfos,
             file.copy(thisBackupDir.path() + QDir::separator() + backupName);
         }
     });
-    actionsMenu->addAction(createBackupAction);
+    backupsMenu->addAction(createBackupAction);
 
-    QAction *loadBackupAction = new QAction(i18n("Load backup"), parentWidget);
-    loadBackupAction->setIcon(backupIcon);
-    actionsMenu->addAction(loadBackupAction);
-
-    QMenu *savedBackupsMenu = new QMenu(parentWidget);
+    backupsMenu->addSection(i18n("Load backup"));
     const QList savedBackups = thisBackupDir
                                    .entryList(QDir::Files | QDir::Readable | QDir::NoDotDot,
                                               QDir::Time);
     QListIterator savedBackupsIterator(savedBackups);
-    loadBackupAction->setMenu(savedBackupsMenu);
     while (savedBackupsIterator.hasNext()) {
         const QString thisSavedBackup = savedBackupsIterator.next();
         const QString selectedBackupPath = thisBackupDir.path() + QDir::separator()
@@ -100,7 +95,12 @@ QList<QAction *> Futili::actions(const KFileItemListProperties &fileItemInfos,
                                                                            &selectedBackup);
         const QIcon selectedIcon = QIcon::fromTheme(selectedMimeType.genericIconName());
         thisSavedBackupAction->setIcon(selectedIcon);
-        savedBackupsMenu->addAction(thisSavedBackupAction);
+        backupsMenu->addAction(thisSavedBackupAction);
+    }
+    if (savedBackups.isEmpty()) {
+        QAction *noCreatedBackupAction = new QAction(i18n("No backups have been created"));
+        noCreatedBackupAction->setDisabled(true);
+        backupsMenu->addAction(noCreatedBackupAction);
     }
 
     return {backupAction};
