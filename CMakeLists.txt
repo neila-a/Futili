@@ -12,26 +12,23 @@ project(futili
 )
 
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core LinguistTools Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core LinguistTools Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets)
 
 find_package(KF6KIO)
 find_package(KF6CoreAddons)
 
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
-include(KDEInstallDirs)
+include(KDEInstallDirs6)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
 
 kcoreaddons_add_plugin(${PROJECT_NAME} SOURCES
     src/${PROJECT_NAME}.cpp src/${PROJECT_NAME}.h
-    src/main.cpp
     src/resources/${PROJECT_NAME}.qrc
-    src/locales/${PROJECT_NAME}_zh_CN.ts
     INSTALL_NAMESPACE kf6/kfileitemaction
 )
-qt_add_translations(${PROJECT_NAME} TS_FILES src/locales/${PROJECT_NAME}_zh_CN.ts)
 target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Widgets
@@ -53,6 +50,6 @@ set(CPACK_DEBIAN_PACKAGE_SUGGESTS dolphin)
 include(CPack)
 
 install(TARGETS ${PROJECT_NAME}
-    LIBRARY DESTINATION /usr/lib/x86_64-linux-gnu/qt6/plugins/kf6/kfileitemaction/
+    LIBRARY DESTINATION ${KDE_INSTALL_FULL_LIBDIR}/${CMAKE_SYSTEM_PROCESSOR}-linux-gnu/qt6/plugins/kf6/kfileitemaction/
     RUNTIME DESTINATION ${KDE_INSTALL_FULL_BINDIR}
 )
