@@ -27,6 +27,8 @@ include(KDECMakeSettings)
 
 kcoreaddons_add_plugin(${PROJECT_NAME} SOURCES
     src/${PROJECT_NAME}.cpp src/${PROJECT_NAME}.h
+    src/dirfile.h src/dirfile.cpp
+
     src/resources/${PROJECT_NAME}.qrc
     INSTALL_NAMESPACE kf6/kfileitemaction
 )

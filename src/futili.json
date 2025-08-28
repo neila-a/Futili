@@ -2,7 +2,8 @@
     "KPlugin": {
         "Icon": "backup",
         "MimeTypes": [
-            "application/octet-stream"
+            "application/octet-stream",
+            "inode/directory"
         ],
         "Name": "Backups",
         "Name[zh]": "备份",
