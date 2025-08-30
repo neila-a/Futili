@@ -14,7 +14,7 @@
 const QUrl filePathUrl(fileItemInfos.urlList().at(0)); \
 const QString filePath = filePathUrl.toLocalFile(); \
 DirFile file(filePath, parentWidget); \
-QDir fileDir(DirFile::location(filePath)); \
+QDir fileDir(filePathUrl.adjusted(QUrl::RemoveFilename).toLocalFile()); \
 bool backupsDirNoExists = fileDir.mkdir(BACKUPSDIRNAME); \
 QDir backupsDir(fileDir.filePath(BACKUPSDIRNAME)); \
 if (backupsDirNoExists) { \
@@ -83,7 +83,7 @@ QList<QAction *> Futili::actions(const KFileItemListProperties &fileItemInfos,
         connect(thisSavedBackupAction, &QAction::triggered, this, [=]() {
             PREPAREDIRS();
             DirFile selectedBackup(selectedBackupPath, parentWidget);
-            selectedBackup.copy(filePath);
+            selectedBackup.copy(filePath, false);
         });
         DirFile selectedBackup(selectedBackupPath, parentWidget);
         const QIcon selectedIcon = selectedBackup.mimeTypeIcon();

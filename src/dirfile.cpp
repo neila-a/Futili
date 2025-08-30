@@ -35,15 +35,10 @@ const QIcon DirFile::mimeTypeIcon() const {
     return QIcon(pixmap);
 }
 
-void DirFile::copy(const QString desination) {
-    KIO::CopyJob *job = KIO::
-        copyAs(QUrl::fromLocalFile(path), QUrl::fromLocalFile(desination), KIO::Overwrite);
+void DirFile::copy(const QString desination, bool confirmOverride) {
+    KIO::CopyJob *job = KIO::copyAs(QUrl::fromLocalFile(path),
+                                    QUrl::fromLocalFile(desination),
+                                    confirmOverride ? KIO::DefaultFlags : KIO::Overwrite);
     KJobWidgets::setWindow(job, parentWidget);
     KIO::FileUndoManager::self()->recordCopyJob(job);
-}
-
-const QString DirFile::location(const QString path) {
-    QStringList pathList = path.split(QDir::separator());
-    pathList.removeLast();
-    return pathList.join(QDir::separator());
 }
