@@ -1,8 +1,7 @@
 #include "dirfile.h"
 #include <QDir>
-#include <QFileInfo>
 #include <QIcon>
-#include <QSettings>
+#include <KDesktopFile>
 
 DirFile::DirFile(const QString _path)
     : QFileInfo(_path) {
@@ -14,12 +13,11 @@ const QIcon DirFile::mimeTypeIcon() const {
     if (isDir()) {
         QDir dir(path);
         if (dir.exists(DIRECTORYFILE)) {
-            QSettings directoryFile(dir.filePath(DIRECTORYFILE), QSettings::IniFormat);
-            directoryFile.beginGroup("Desktop Entry");
-            if (directoryFile.contains("Icon")) {
-                iconName = directoryFile.value("Icon").toString();
+            KDesktopFile directoryFile(dir.filePath(DIRECTORYFILE));
+            const QString iconStr = directoryFile.readIcon();
+            if (!iconStr.isEmpty()) {
+                iconName = iconStr;
             }
-            directoryFile.endGroup();
         }
     } else if (isFile()) {
         QFile file(path);
