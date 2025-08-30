@@ -9,7 +9,7 @@
 
 class DirFile : public QFileInfo {
     public:
-    DirFile(const QString _path);
+    DirFile(const QString _path, QWidget *_parentWidget);
 
     const QIcon mimeTypeIcon() const;
     void copy(const QString desination);
@@ -17,6 +17,7 @@ class DirFile : public QFileInfo {
     static const QString location(const QString path);
 
     private:
+    QWidget *parentWidget;
     QString path;
 };
 

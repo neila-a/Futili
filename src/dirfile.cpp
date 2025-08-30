@@ -2,10 +2,14 @@
 #include <QDir>
 #include <QIcon>
 #include <KDesktopFile>
+#include <KIO/CopyJob>
+#include <KIO/FileUndoManager>
+#include <KJobWidgets>
 
-DirFile::DirFile(const QString _path)
+DirFile::DirFile(const QString _path, QWidget *_parentWidget)
     : QFileInfo(_path) {
     path = _path;
+    parentWidget = _parentWidget;
 }
 
 const QIcon DirFile::mimeTypeIcon() const {
@@ -28,26 +32,11 @@ const QIcon DirFile::mimeTypeIcon() const {
 }
 
 void DirFile::copy(const QString desination) {
-    if (isDir()) {
-        QDir dir(path);
-        QDir desinationLocationDir(location(desination));
-        QFileInfo desinationInfo(desination);
-        desinationLocationDir.mkdir(desinationInfo.fileName());
-        QDir desinationDir(desination);
-        const QFileInfoList fileInfos = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::Readable
-                                                          | QDir::NoDotAndDotDot | QDir::Hidden);
-        QListIterator fileInfosIterator(fileInfos);
-        while (fileInfosIterator.hasNext()) {
-            QFileInfo fileInfo = fileInfosIterator.next();
-            DirFile file(fileInfo.filePath());
-            file.copy(desinationDir.filePath(fileInfo.fileName()));
-        }
-    } else if (isFile()) {
-        QFile file(path);
-        QFile desinationFile(desination);
-        desinationFile.remove();
-        file.copy(desination);
-    }
+    KIO::CopyJob *job = KIO::copyAs(QUrl::fromLocalFile(path),
+                                    QUrl::fromLocalFile(desination),
+                                    KIO::Overwrite);
+    KJobWidgets::setWindow(job, parentWidget);
+    KIO::FileUndoManager::self()->recordCopyJob(job);
 }
 
 const QString DirFile::location(const QString path) {

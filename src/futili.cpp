@@ -12,7 +12,7 @@
 #define PREPAREDIRS() \
 const QUrl filePathUrl(fileItemInfos.urlList().at(0)); \
 const QString filePath = filePathUrl.toLocalFile(); \
-DirFile file(filePath); \
+DirFile file(filePath, parentWidget); \
 QDir fileDir(DirFile::location(filePath)); \
 bool backupsDirNoExists = fileDir.mkdir(BACKUPSDIRNAME); \
 QDir backupsDir(fileDir.filePath(BACKUPSDIRNAME)); \
@@ -81,10 +81,10 @@ QList<QAction *> Futili::actions(const KFileItemListProperties &fileItemInfos,
         QAction *thisSavedBackupAction = new QAction(thisSavedBackup.fileName());
         connect(thisSavedBackupAction, &QAction::triggered, this, [=]() {
             PREPAREDIRS();
-            DirFile selectedBackup(selectedBackupPath);
+            DirFile selectedBackup(selectedBackupPath, parentWidget);
             selectedBackup.copy(filePath);
         });
-        DirFile selectedBackup(selectedBackupPath);
+        DirFile selectedBackup(selectedBackupPath, parentWidget);
         const QIcon selectedIcon = selectedBackup.mimeTypeIcon();
         thisSavedBackupAction->setIcon(selectedIcon);
         backupsMenu->addAction(thisSavedBackupAction);
