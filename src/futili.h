@@ -1,7 +1,6 @@
 #ifndef FUTILI_H
 #define FUTILI_H
 
-#include <QDir>
 #include <QFile>
 #include <QUrl>
 #include <KAbstractFileItemActionPlugin>

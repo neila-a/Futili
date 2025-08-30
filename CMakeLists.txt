@@ -16,6 +16,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets)
 
 find_package(KF6KIO)
+find_package(KF6IconThemes)
 find_package(KF6CoreAddons)
 find_package(KF6Config)
 find_package(KF6I18n)
@@ -40,6 +41,7 @@ target_link_libraries(${PROJECT_NAME}
     KF6::KIOWidgets
     KF6::I18n
     KF6::ConfigGui
+    KF6::IconThemes
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     NAME="${PROJECT_NAME}"

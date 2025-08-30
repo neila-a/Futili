@@ -1,9 +1,11 @@
 #include "dirfile.h"
 #include <QDir>
 #include <QIcon>
+#include <QPixmap>
 #include <KDesktopFile>
 #include <KIO/CopyJob>
 #include <KIO/FileUndoManager>
+#include <KIconLoader>
 #include <KJobWidgets>
 
 DirFile::DirFile(const QString _path, QWidget *_parentWidget)
@@ -28,13 +30,14 @@ const QIcon DirFile::mimeTypeIcon() const {
         QMimeType mimeType = QMimeDatabase().mimeTypeForFileNameAndData(path, &file);
         iconName = mimeType.genericIconName();
     }
-    return QIcon::fromTheme(iconName);
+    KIconLoader loader(NAME);
+    QPixmap pixmap = loader.loadIcon(iconName, KIconLoader::NoGroup);
+    return QIcon(pixmap);
 }
 
 void DirFile::copy(const QString desination) {
-    KIO::CopyJob *job = KIO::copyAs(QUrl::fromLocalFile(path),
-                                    QUrl::fromLocalFile(desination),
-                                    KIO::Overwrite);
+    KIO::CopyJob *job = KIO::
+        copyAs(QUrl::fromLocalFile(path), QUrl::fromLocalFile(desination), KIO::Overwrite);
     KJobWidgets::setWindow(job, parentWidget);
     KIO::FileUndoManager::self()->recordCopyJob(job);
 }

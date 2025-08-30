@@ -1,4 +1,5 @@
 #include "futili.h"
+#include <QDir>
 #include <QInputDialog>
 #include <QMenu>
 #include <QMimeDatabase>
