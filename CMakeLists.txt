@@ -19,6 +19,7 @@ find_package(KF6KIO)
 find_package(KF6IconThemes)
 find_package(KF6CoreAddons)
 find_package(KF6Config)
+find_package(KF6IconWidgets)
 find_package(KF6I18n)
 
 find_package(ECM REQUIRED NO_MODULE)
@@ -28,11 +29,16 @@ include(KDECompilerSettings)
 include(KDECMakeSettings)
 
 kcoreaddons_add_plugin(${PROJECT_NAME} SOURCES
-    src/${PROJECT_NAME}.cpp src/${PROJECT_NAME}.h
-    src/dirfile.h src/dirfile.cpp
-
     src/resources/${PROJECT_NAME}.qrc
     INSTALL_NAMESPACE kf6/kfileitemaction
+)
+
+target_sources(futili
+  PRIVATE
+    src/${PROJECT_NAME}.cpp src/${PROJECT_NAME}.h
+    src/dirfile.h src/dirfile.cpp
+    src/createbackupdialog.h src/createbackupdialog.cpp src/createbackupdialog.ui
+    src/backupconfig.h src/backupconfig.cpp
 )
 target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
@@ -42,6 +48,7 @@ target_link_libraries(${PROJECT_NAME}
     KF6::I18n
     KF6::ConfigGui
     KF6::IconThemes
+    KF6::IconWidgets
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     NAME="${PROJECT_NAME}"

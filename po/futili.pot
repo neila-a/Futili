@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: http://example.com\n"
-"POT-Creation-Date: 2025-08-27 12:57+0800\n"
+"POT-Creation-Date: 2025-10-02 11:27+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,26 +17,26 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: futili.cpp:48
-msgid "Backup"
-msgstr ""
-
-#: futili.cpp:55
-msgid "Create backup"
-msgstr ""
-
-#: futili.cpp:62
-msgid "Create backup of %1"
-msgstr ""
-
-#: futili.cpp:63
+#: createbackupdialog.cpp:9
 msgid "Backup name:"
 msgstr ""
 
-#: futili.cpp:76
+#: createbackupdialog.cpp:19
+msgid "Create backup of %1"
+msgstr ""
+
+#: futili.cpp:49
+msgid "Backup"
+msgstr ""
+
+#: futili.cpp:56
+msgid "Create backup"
+msgstr ""
+
+#: futili.cpp:71
 msgid "Load backup"
 msgstr ""
 
-#: futili.cpp:101
+#: futili.cpp:92
 msgid "No backups have been created"
 msgstr ""

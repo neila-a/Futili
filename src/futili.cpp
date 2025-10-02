@@ -3,6 +3,8 @@
 #include <QInputDialog>
 #include <QMenu>
 #include <QMimeDatabase>
+#include "backupconfig.h"
+#include "createbackupdialog.h"
 #include "dirfile.h"
 #include <KActionMenu>
 #include <KFileItemListProperties>
@@ -22,7 +24,9 @@ if (backupsDirNoExists) { \
     backupDirIconFile.copy(backupsDir.filePath(DIRECTORYFILE)); \
 } \
 backupsDir.mkdir(file.fileName()); \
-QDir thisBackupDir(backupsDir.filePath(file.fileName()));
+QDir thisBackupDir(backupsDir.filePath(file.fileName())); \
+thisBackupDir.mkdir("backups"); \
+QDir thisBackupStorageDir(thisBackupDir.filePath("backups"));
 
 K_PLUGIN_CLASS_WITH_JSON(Futili, "futili.json")
 
@@ -53,41 +57,30 @@ QList<QAction *> Futili::actions(const KFileItemListProperties &fileItemInfos,
     QAction *createBackupAction = new QAction(i18n("Create backup"), parentWidget);
     createBackupAction->setIcon(addIcon);
     connect(createBackupAction, &QAction::triggered, this, [=]() {
-        bool ok{};
         PREPAREDIRS();
-        const QString backupName = QInputDialog::
-            getText(parentWidget,
-                    i18n("Create backup of %1", filePath),
-                    i18n("Backup name:"),
-                    QLineEdit::Normal,
-                    QDateTime::currentDateTime().toString("yyyyMMdd-HHmmss"),
-                    &ok,
-                    Qt::Window,
-                    Qt::ImhNoAutoUppercase);
-        if (ok && !backupName.isEmpty()) {
-            file.copy(thisBackupDir.filePath(backupName));
-        }
+        CreateBackupDialog dialog(parentWidget);
+        dialog.setFile(file);
+        dialog.setBackupStorageDir(thisBackupStorageDir);
+        dialog.exec();
     });
     backupsMenu->addAction(createBackupAction);
 
     backupsMenu->addSection(i18n("Load backup"));
-    const QFileInfoList savedBackups = thisBackupDir
-                                           .entryInfoList(QDir::Files | QDir::Dirs | QDir::Readable
-                                                              | QDir::NoDotAndDotDot,
-                                                          QDir::Time);
-    QListIterator savedBackupsIterator(savedBackups);
-    while (savedBackupsIterator.hasNext()) {
-        const QFileInfo thisSavedBackup = savedBackupsIterator.next();
-        const QString selectedBackupPath = thisSavedBackup.filePath();
-        QAction *thisSavedBackupAction = new QAction(thisSavedBackup.fileName());
+    BackupConfig backupConfig(thisBackupDir);
+    const BackupInfoWithPathList savedBackups = backupConfig.dedup();
+    for (const auto &thisSavedBackup : savedBackups) {
+        const QString selectedBackupPath = thisBackupStorageDir.filePath(thisSavedBackup.path);
+        QAction *thisSavedBackupAction = new QAction(thisSavedBackup.name);
         connect(thisSavedBackupAction, &QAction::triggered, this, [=]() {
             PREPAREDIRS();
             DirFile selectedBackup(selectedBackupPath, parentWidget);
             selectedBackup.copy(filePath, false);
         });
-        DirFile selectedBackup(selectedBackupPath, parentWidget);
-        const QIcon selectedIcon = selectedBackup.mimeTypeIcon();
-        thisSavedBackupAction->setIcon(selectedIcon);
+
+        KIconLoader loader(NAME);
+        QPixmap pixmap = loader.loadIcon(thisSavedBackup.icon, KIconLoader::NoGroup);
+        thisSavedBackupAction->setIcon(QIcon(pixmap));
+
         backupsMenu->addAction(thisSavedBackupAction);
     }
     if (savedBackups.isEmpty()) {
